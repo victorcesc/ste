@@ -16,7 +16,7 @@ unsigned char *portb = (unsigned char *) 0x25;
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
 //   pinMode(LED_BUILTIN, OUTPUT);
-    *ddrb = ~( 1 << led_pin );  // 1101 1111
+    *ddrb = ( 1 << led_pin );  // 0010 0000
    
 }
 
