@@ -24,7 +24,7 @@ unsigned char *portd = (unsigned char *) 0x2b;
 
 void setup() {
 
-    *ddrb = ( 1 << led_pin );  // 0010 0000 correspondente ao shift de 5 no led 
+    *ddrb = ((*ddrb) | ( 1 << led_pin ));  // 0010 0000 correspondente ao shift de 5 no led 
     *ddrd = ((*ddrd) & ~( 1 << bot_pin ));  // 1111 1011 correspondente ao shift de 2 do botao
 }
 
@@ -34,24 +34,26 @@ void delay1000(){
 } 
 
 void ledOn(){
-    *portb = (1 << led_pin);
+    *portb = *portb | (1 << led_pin);//mantem os bits da porta e apenas altera o especifico - vale pra todos
 }
 
 
 void ledOff(){
-    *portb = ~(1 << led_pin);
+    *portb = *portb & ~(1 << led_pin);
 }
+
+bool botao(){
+  // ler o valor do botao pind
+    return ( (*pind) & (1 << bot_pin) ) > 0;
+  // return botao esta on ou off?
+}
+
 
 
 
 // the loop function runs over and over again forever
 void loop() {
-  ledOn();   // turn the LED on (HIGH is the voltage level)
-//  delay(1000);
-  delay1000();// wait for a second
-  ledOff();    // turn the LED off by making the voltage LOW
-  delay1000();
-//  delay(1000);                       // wait for a second
+    botao() ? ledOn() : ledOff();   // turn the LED on (HIGH is the voltage level)
 }
 
 
