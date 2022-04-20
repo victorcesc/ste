@@ -1,4 +1,5 @@
 #include <avr/interrupt.h>
+#include "gpio_pin.h"
 // LED - PB5 - Arduino 13
 // BTN - PD2 - Arduino 2
 
@@ -31,6 +32,8 @@ void setup() {
 
     *ddrb = ((*ddrb) | ( 1 << led_pin ));  // 0010 0000 correspondente ao shift de 5 no led 
     *ddrd = ((*ddrd) & ~( 1 << bot_pin ));  // 1111 1011 correspondente ao shift de 2 do botao
+
+
     *eicra = ( (*eicra) & 0xf0 | 0x03 ); // (*eicra) & 0xf0 == 1111 0000 
     // zera os quatro da direita e escreve 1111 nos da esq, apos isso faz um | com os dados a serem atribuidos
     *eimsk = ( (*eimsk) & 0xfc | 0x01 );
@@ -57,10 +60,14 @@ void ledOff(){
     *portb = *portb & ~(1 << led_pin);
 }
 
+GPIO_Pin button(GPIO_Pin::GPIO_PORTD,bot_pin, GPIO_Pin::INPUT);
+GPIO_Pin led(GPIO_Pin::GPIO_PORTB, led_pin, GPIO_Pin::OUTPUT);
+
+
 bool botao(){
   // ler o valor do botao pind
   //  return ( (*pind) & (1 << bot_pin) ) > 0;
-  return bot;
+  return button.get();
   // return botao esta on ou off?
 }
 
@@ -69,12 +76,13 @@ bool botao(){
 
 // the loop function runs over and over again forever
 void loop() {
-    botao() ? ledOn() : ledOff();   // turn the LED on (HIGH is the voltage level)
+    
+    botao() ? led.set() : led.clear();   // turn the LED on (HIGH is the voltage level)
 }
 
 
 int main(void){
-  setup();
+  //setup();
   while(true)
   {
       loop();
