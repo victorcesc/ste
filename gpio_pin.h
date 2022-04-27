@@ -1,5 +1,7 @@
 #ifndef __GPIO_PIN_H__
 #define __GPIO_PIN_H__
+#include <avr/interrupt.h>
+
 
 class GPIO_Pin{
 
@@ -21,7 +23,8 @@ public:
     };
     enum GPIO_Mode_t{
         INPUT = 0,
-        OUTPUT // assume-se 1
+        OUTPUT =1,// assume-se 1
+        INTERRUPT = 2
     };
 
     GPIO_Pin(GPIO_Port_t port , char pin, GPIO_Mode_t dir) :  _pin(pin){
@@ -32,10 +35,13 @@ public:
             case GPIO_PORTD : _port = PortD; break;
         }
         //DDR
+        // TALVEZ INTERRUPT AQUI
         if(dir == INPUT){            
             _port->ddr = ((_port->ddr ) & ~(1 << _pin));//botao
-        }else{
+        }if(dir == OUTPUT){
             _port->ddr = ((_port->ddr) | (1 << _pin));//led
+        }if(dir == INTERRUPT){
+
         }
 
     }
@@ -53,14 +59,6 @@ public:
 private:
     GPIO_Registers_t *_port;
     char _pin;
-
-
-
-
-
-
-
-
 
 };
 

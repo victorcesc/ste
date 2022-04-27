@@ -1,11 +1,14 @@
 #include <avr/interrupt.h>
 #include "gpio_pin.h"
+#include "queue.h"
 // LED - PB5 - Arduino 13
 // BTN - PD2 - Arduino 2
 
 //to compile : avr-gcc -mmcu=atmega328p file -o output
 
-
+typedef void (*FuncPtr)(void);
+typedef Fifo<10,FuncPtr> FifoDeFuncoes_t;
+FifoDeFuncoes_t fifo;
 //olhar na imagem do datasheet
 int led_pin = 5;// pinb5 = port13 arduino
 int bot_pin = 2;// pind2 = port2 arduino
@@ -41,10 +44,11 @@ void setup() {
 }   // 0xfc = 1111 1100
 
 //ISR(ADC_vect) // nome na tabela do libc
-ISR(INT0_vect){
-  bot = !bot;
-}
 
+
+
+GPIO_Pin button(GPIO_Pin::GPIO_PORTD,bot_pin, GPIO_Pin::INPUT);
+GPIO_Pin led(GPIO_Pin::GPIO_PORTB, led_pin, GPIO_Pin::OUTPUT);
 
 void delay1000(){
   unsigned long x = 0x7ffff;
@@ -52,16 +56,17 @@ void delay1000(){
 } 
 
 void ledOn(){
-    *portb = *portb | (1 << led_pin);//mantem os bits da porta e apenas altera o especifico - vale pra todos ^
+    //*portb = *portb | (1 << led_pin);//mantem os bits da porta e apenas altera o especifico - vale pra todos ^
+    led.set();
 }
 
 
 void ledOff(){
-    *portb = *portb & ~(1 << led_pin);
+    // *portb = *portb & ~(1 << led_pin);
+    led.clear();
 }
 
-GPIO_Pin button(GPIO_Pin::GPIO_PORTD,bot_pin, GPIO_Pin::INPUT);
-GPIO_Pin led(GPIO_Pin::GPIO_PORTB, led_pin, GPIO_Pin::OUTPUT);
+
 
 
 bool botao(){
@@ -72,17 +77,31 @@ bool botao(){
 }
 
 
+ISR(INT0_vect){
+  fifo.enqueue(ledOn);
+  fifo.enqueue(delay1000);
+  fifo.enqueue(ledOff);
+  fifo.enqueue(delay1000);
+  fifo.enqueue(ledOn);
+  fifo.enqueue(delay1000);
+  fifo.enqueue(ledOff);
+  fifo.enqueue(delay1000);  
+  
+  //bot = !bot;
+}
 
 
 // the loop function runs over and over again forever
-void loop() {
-    
-    botao() ? led.set() : led.clear();   // turn the LED on (HIGH is the voltage level)
+void loop() {    
+    // botao() ? led.set() : led.clear();   // turn the LED on (HIGH is the voltage level)
+    if(fifo.length()>0){
+      (fifo.dequeue())();
+    }
 }
 
 
 int main(void){
-  //setup();
+  setup();
   while(true)
   {
       loop();
