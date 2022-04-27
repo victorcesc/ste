@@ -1,6 +1,7 @@
 #include <avr/interrupt.h>
 #include "gpio_pin.h"
 #include "queue.h"
+#include "uart.h"
 // LED - PB5 - Arduino 13
 // BTN - PD2 - Arduino 2
 
@@ -13,7 +14,7 @@ FifoDeFuncoes_t fifo;
 int led_pin = 5;// pinb5 = port13 arduino
 int bot_pin = 2;// pind2 = port2 arduino
 volatile int bot = 0 ; // sempre ser buscada em memoria, nunca ser permanentemente salva no registrador
-
+Uart uart;
 
 //port b 0x24 0x23 0x25
 unsigned char *ddrb = (unsigned char *) 0x24;//0x24 endereco de memoria
@@ -95,7 +96,8 @@ ISR(INT0_vect){
 void loop() {    
     // botao() ? led.set() : led.clear();   // turn the LED on (HIGH is the voltage level)
     if(fifo.length()>0){
-      (fifo.dequeue())();
+       uart.put('f');
+       (fifo.dequeue())();
     }
 }
 
