@@ -3,16 +3,21 @@
 
 
 
-AdcChannel::AdcChannel() : channel(ch){
-    ADMUX = 0x0f  & ch;
-    ADCRSA  = (1<< ADEN);
+AdcChannel::AdcChannel(int ch) : channel(ch){
+    ADMUX = (1 << REFS0) | (0x0f  & channel);
+    ADCSRA  = (1<< ADEN);
 }
 
 int AdcChannel::get(){
-    ADMUX = 0x0f & channel;
-    ADCRSA  = (1<< ADEN) | (1 << ADSC);
+    
+    ADMUX = (ADMUX & 0Xf0) | (0x0f & channel);
+    ADCSRA |= (1 << ADSC);
 
-    while (ADCRSA & (1 << ADSC));
+    while (ADCSRA & (1 << ADSC));
+    
+    ADCSRA |= (1 << ADSC);
+
+    while (ADCSRA & (1 << ADSC));    
     return ADC;
 
 }
