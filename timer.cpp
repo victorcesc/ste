@@ -15,7 +15,7 @@ Timer::Timer(){
     TCCR0B = (1 << CS01);
     //WGM01 = 1;
     TCCR0A = (1 << WGM01);
-    OCR0A = 99;
+    OCR0A = 199;
     TIMSK0 = (1 << OCIE0A);
 }
 
@@ -35,14 +35,9 @@ Timer::~Timer(){
 
 
 Microseconds Timer::micros(){
-    return microseconds
+    return microseconds;
 }
 
 void Timer::handleIsr(){
     microseconds += 100;
-
-}
-
-ISR(TIMER0_COMPA_vect){
-    Timer::singleton()->handleIsr();
 }
