@@ -45,8 +45,10 @@ ISR(ADC_vect){
 
 void AdcChannel::int_handler(){
     //TODO - SALVAR O ADC NA CFIFO
+    cfifo.enqueue(ADC);
 }
 
 int AdcChannel::get(int i){
 //RETORNAR O IÉSIMO ITEM DA CFIFO
+    return cfifo.dequeue(i);
 }

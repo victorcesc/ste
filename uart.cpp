@@ -21,8 +21,24 @@ Uart::~Uart()
 
 void Uart::put(const char c)
 {
-     while(!(UCSR0A  & (1 << UDRE0))); //errado
-     UDR0 = c;
+    tx_fifo.enqueue(c);
+
+    // while(!(UCSR0A  & (1 << UDRE0))); 
+    // UDR0 = c;
+}
+
+
+void Uart::udre_handler(){
+    if(tx_fifo.length() > 0){
+        UDR0 = tx_fifo.dequeue();
+    }else{
+
+        //desligar interrupcao udre
+    }
+}
+
+ISR(USART_UDRE_vect){
+    UCSR0A = (1 << UDRE0);
 }
 
 void Uart::puts(const char *s){
