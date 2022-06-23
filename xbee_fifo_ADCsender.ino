@@ -2,6 +2,8 @@
 #include <queue.h>
 #include <XBee.h>
 
+//instalar biblioteca freeRTOS e xbee-arduino
+
 QueueHandle_t xQueue;
 
 XBee xbee = XBee(); // Cria objeto para comunicar com o XBee
