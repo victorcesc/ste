@@ -1,0 +1,12 @@
+MAQUINA DE ESTADOS PROJETO FINAL
+
+Task Wifi -
+
+entradas = chegar mensagem de wifi ou zigbee
+!Pare
+saida = mensagem decodificada ate a MessageQueue
+
+Task Movimentos
+
+entradas = giroscopio e encoders de roda
+saida = motores
